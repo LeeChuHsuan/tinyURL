@@ -10,34 +10,33 @@ const connectionString = "host=localhost port=6666 user=postgres dbname=postgres
 
 
 type urlMapping struct{
-	Url string 
+	URL string 
 	Hashval string 
 }
 
 
-func InserturlMapping(url, hashval string){
-	db,err:= gorm.Open("postgres",connectionString)
+func InsertURLMapping(url, hashval string){
+	db, err := gorm.Open("postgres",connectionString)
 	defer db.Close()
-	if err!=nil{
+	if err != nil{
 		fmt.Println(err)
 		return 
 	}
 	record := urlMapping{url,hashval}
 	db.Create(&record)
-
 }
 
-func GeturlMapping(hashval string) string{
-	db,err:= gorm.Open("postgres",connectionString)
+func GetURLMapping(hashval string) (string, error){
+	db,err := gorm.Open("postgres",connectionString)
 	defer db.Close()
 	if err!=nil{
 		fmt.Println(err)
-		return ""
+		return "", err
 	}
 	var record urlMapping
-	if err =db.Where("hashval=?",hashval).First(&record).Error;err!=nil{
+	if err = db.Where("hashval=?", hashval).First(&record).Error;err != nil{
 		fmt.Println(err)
-		return ""
+		return "", err 
 	}
-	return record.Url
+	return record.URL, nil
 }

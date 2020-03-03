@@ -27,12 +27,11 @@ func handler(w http.ResponseWriter, req *http.Request) {
 			http.ServeFile(w, req, "./index.html")
 		} else {
 			hashval := req.URL.Path[1:]
-			url := GeturlMapping(hashval)
-			if url != "" {
-				http.Redirect(w, req, url, http.StatusFound)
-			} else {
-				http.NotFound(w, req)
+			url, err := GetURLMapping(hashval)
+			if err != nil{
+				http.NotFound(w,req)
 			}
+			http.Redirect(w, req, url, http.StatusFound)
 		}
 	} else if req.Method == "POST" {
 		if err := req.ParseForm(); err != nil {
@@ -46,7 +45,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprint(w, "{\"error\": \"%v\"}", err)
 			return
 		}
-		InserturlMapping(url, newURL)
+		InsertURLMapping(url, newURL)
 		fmt.Fprintf(w, "%s", result)
 	}
 }
