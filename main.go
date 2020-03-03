@@ -5,8 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type tinyURL struct {
@@ -21,38 +21,37 @@ func shortURL(url string) string {
 	return hashvalue[:8]
 }
 
-func handler(w http.ResponseWriter, req *http.Request) {
-	if req.Method == "GET" {
-		if req.URL.Path == "/" {
-			http.ServeFile(w, req, "./index.html")
-		} else {
-			hashval := req.URL.Path[1:]
-			url, err := GetURLMapping(hashval)
-			if err != nil{
-				http.NotFound(w,req)
-			}
-			http.Redirect(w, req, url, http.StatusFound)
-		}
-	} else if req.Method == "POST" {
-		if err := req.ParseForm(); err != nil {
-			fmt.Fprint(w, "{\"error\": \"%v\"}", err)
-			return
-		}
-		url := req.FormValue("url")
-		newURL := shortURL(url)
-		result, err := json.Marshal(tinyURL{domainName + "/" + newURL, nil})
-		if err != nil {
-			fmt.Fprint(w, "{\"error\": \"%v\"}", err)
-			return
-		}
-		InsertURLMapping(url, newURL)
-		fmt.Fprintf(w, "%s", result)
-	}
-}
-
 const domainName = "localhost:8000"
 
+func getIndexPage(c *gin.Context){
+	http.ServeFile(c.Writer, c.Request, "./index.html")
+}
+
+func redirectHandler(c *gin.Context){
+	hashval := c.Param("hashval")
+	url, err := GetURLMapping(hashval)
+	if err != nil{
+		http.NotFound(c.Writer, c.Request)
+	}
+	http.Redirect(c.Writer, c.Request, url, http.StatusFound)
+}
+
+func postHandler(c *gin.Context){
+	url := c.PostForm("url")
+	newURL := shortURL(url)
+	result, err := json.Marshal(tinyURL{domainName + "/" + newURL, nil})
+	if err != nil {
+		fmt.Fprint(c.Writer, "{\"error\": \"%v\"}", err)
+		return
+	}
+	InsertURLMapping(url, newURL)
+	fmt.Fprintf(c.Writer, "%s", result)
+}
+
 func main() {
-	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe("localhost:8000", nil))
+	router := gin.Default()
+	router.GET("/", getIndexPage)
+	router.GET("/:hashval", redirectHandler)
+	router.POST("/", postHandler)
+	router.Run("localhost:8000")
 }

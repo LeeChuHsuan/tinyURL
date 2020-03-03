@@ -1,0 +1,6 @@
+host: localhost
+port: 6666
+user: postgres
+dbname: postgres
+password: root
+sslmode: false
