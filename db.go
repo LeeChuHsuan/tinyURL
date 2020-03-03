@@ -3,12 +3,28 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"fmt"
-	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+	"log"
 )
 
 
-const connectionString = "host=localhost port=6666 user=postgres dbname=postgres password=root sslmode=disable"
+var connectionString string 
 
+func init(){
+	viper.SetConfigName("dbconfig")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println(err)
+		log.Fatal(err)
+	}
+
+	settings := []string{"host", "port", "user", "dbname", "password", "sslmode"}
+	for _, s := range settings {
+		connectionString = fmt.Sprintf("%s%s=%v ", connectionString, s, viper.Get(s))
+	}
+	fmt.Println(connectionString)
+}
 
 type urlMapping struct{
 	URL string 
