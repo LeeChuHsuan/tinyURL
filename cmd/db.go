@@ -11,9 +11,9 @@ import (
 var connectionString string 
 
 func init(){
-	viper.SetConfigName("dbconfig")
-	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
+	viper.SetConfigName("../config/dbconfig")
+	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println(err)
 		log.Fatal(err)
@@ -23,7 +23,6 @@ func init(){
 	for _, s := range settings {
 		connectionString = fmt.Sprintf("%s%s=%v ", connectionString, s, viper.Get(s))
 	}
-	fmt.Println(connectionString)
 }
 
 type urlMapping struct{

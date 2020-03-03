@@ -24,7 +24,7 @@ func shortURL(url string) string {
 const domainName = "localhost:8000"
 
 func getIndexPage(c *gin.Context){
-	http.ServeFile(c.Writer, c.Request, "./index.html")
+	http.ServeFile(c.Writer, c.Request, "../web/index.html")
 }
 
 func redirectHandler(c *gin.Context){
