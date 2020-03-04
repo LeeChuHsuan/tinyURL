@@ -1,16 +1,18 @@
 package main
+
 import (
+	"errors"
+	"fmt"
+	"log"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"fmt"
 	"github.com/spf13/viper"
-	"log"
 )
 
+var connectionString string
 
-var connectionString string 
-
-func init(){
+func init() {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("../config/dbconfig")
 	viper.SetConfigType("yaml")
@@ -25,34 +27,53 @@ func init(){
 	}
 }
 
-type urlMapping struct{
-	URL string 
-	Hashval string 
+type urlMapping struct {
+	URL     string
+	Hashval string
 }
 
+type repository interface {
+	InsertDB() error
+	GetByPrimaryKey(string) (interface{}, error)
+}
 
-func InsertURLMapping(url, hashval string){
-	db, err := gorm.Open("postgres", connectionString)
-	defer db.Close()
-	if err != nil{
-		fmt.Println(err)
-		return 
+func (u *urlMapping) InsertDB() error {
+	if u == nil {
+		return errors.New("nil urlMapping pointer")
 	}
-	record := urlMapping{url, hashval}
-	db.Create(&record)
+
+	db, err := openDB()
+	defer db.Close()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	if err = db.Create(u).Error; err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
-func GetURLMapping(hashval string) (string, error){
-	db, err := gorm.Open("postgres", connectionString)
-	defer db.Close()
-	if err!=nil{
+func (u *urlMapping) GetByPrimaryKey(hashval string) (*urlMapping, error) {
+	db, err := openDB()
+	if err != nil {
 		fmt.Println(err)
-		return "", err
+		return nil, err
 	}
 	var record urlMapping
 	if err = db.Where("hashval=?", hashval).First(&record).Error; err != nil {
 		fmt.Println(err)
-		return "", err 
+		return nil, err
 	}
-	return record.URL, nil
+	return &record, nil
+}
+
+func openDB() (*gorm.DB, error) {
+	return gorm.Open("postgres", connectionString)
+}
+
+func newurlMapping(url, hashval string) urlMapping {
+	return urlMapping{url, hashval}
 }
