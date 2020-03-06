@@ -11,9 +11,8 @@ import (
 )
 
 type Repository interface {
-	New(map[string]string) Repository
-	InsertDB() error
-	GetByPrimaryKey(string) (string, error)
+	InsertDB(interface{}) error
+	GetByPrimaryKey(interface{}) (interface{}, error)
 }
 
 func init() {

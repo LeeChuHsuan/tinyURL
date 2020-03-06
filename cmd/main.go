@@ -1,25 +1,28 @@
 package main
 
 import (
+	"log"
+	"tinyURL/internal/repository"
 	"tinyURL/internal/router"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
-func setup() *gin.Engine {
+func setup(dbConn *gorm.DB) *gin.Engine {
 
-	router := router.SetupRouter()
+	router := router.SetupRouter(dbConn)
 	return router
 }
 
 func main() {
-	/*
-		db, err := repository.OpenDB()
-		defer db.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-	router := setup()
+
+	dbConn, err := repository.OpenDB()
+	defer dbConn.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	router := setup(dbConn)
 	router.Run("localhost:8000")
 }

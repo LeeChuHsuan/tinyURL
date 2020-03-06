@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"tinyURL/internal/repository"
 
 	"github.com/gin-gonic/gin"
@@ -29,18 +30,21 @@ func (t *tinyURL) Get(c *gin.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	result, ok := record.(repository.URLMapping)
+	if !ok {
+		return "", errors.New("type conversion error")
+	}
 
-	return record, err
+	return result.URL, err
 }
 
 func (t *tinyURL) Post(c *gin.Context) (string, error) {
 	url := c.PostForm("url")
 	URLHash := hashURL(url)
-	m := map[string]string{"URL": url, "Hashval": URLHash}
 
-	newRecord := t.repo.New(m)
-	err := newRecord.InsertDB()
-	//repo.InsertDB()
+	record := repository.NewURLMapping(url, URLHash)
+	err := t.repo.InsertDB(record)
+
 	if err != nil {
 		return "", err
 	}

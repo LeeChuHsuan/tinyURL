@@ -6,11 +6,12 @@ import (
 	"tinyURL/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(dbConn *gorm.DB) *gin.Engine {
 	router := gin.Default()
-	repo := repository.NewURLMapping("", "")
+	repo := repository.NewURLMappingRepo(dbConn)
 	URLService := service.NewTinyURLService(
 		service.NewtinyURL("", repo, nil),
 	)
