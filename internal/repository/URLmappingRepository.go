@@ -24,7 +24,7 @@ func (u *URLMapping) InsertDB() error {
 		return errors.New("nil URLMapping pointer")
 	}
 
-	db, err := openDB()
+	db, err := OpenDB()
 	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
@@ -39,7 +39,7 @@ func (u *URLMapping) InsertDB() error {
 }
 
 func (u *URLMapping) GetByPrimaryKey(hashval string) (string, error) {
-	db, err := openDB()
+	db, err := OpenDB()
 	if err != nil {
 		fmt.Println(err)
 		return "", err

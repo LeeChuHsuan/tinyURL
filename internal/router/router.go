@@ -1,6 +1,7 @@
 package router
 
 import (
+	"tinyURL/internal/controller"
 	"tinyURL/internal/repository"
 	"tinyURL/internal/service"
 
@@ -13,8 +14,11 @@ func SetupRouter() *gin.Engine {
 	URLService := service.NewTinyURLService(
 		service.NewtinyURL("", repo, nil),
 	)
-	router.GET("/", URLService.GetIndexPage)
-	router.GET("/:hashval", URLService.GetHandler)
-	router.POST("/", URLService.PostHandler)
+
+	tinyURLController := controller.NewtinyURLController(URLService)
+
+	router.GET("/", tinyURLController.GetIndexPage)
+	router.GET("/:hashval", tinyURLController.Get)
+	router.POST("/", tinyURLController.Post)
 	return router
 }

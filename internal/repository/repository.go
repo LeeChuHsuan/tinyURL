@@ -33,6 +33,6 @@ func init() {
 	os.Setenv("dbConnectionString", connectionString)
 }
 
-func openDB() (*gorm.DB, error) {
+func OpenDB() (*gorm.DB, error) {
 	return gorm.Open("postgres", os.Getenv("dbConnectionString"))
 }
