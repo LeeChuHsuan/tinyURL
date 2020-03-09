@@ -17,9 +17,17 @@ func SetupRouter(dbConn *gorm.DB) *gin.Engine {
 	)
 
 	tinyURLController := controller.NewtinyURLController(URLService)
+	uploadFileService := service.NewfileService()
+	uploadFileController := controller.NewfileServiceController(uploadFileService)
 
-	router.GET("/", tinyURLController.GetIndexPage)
-	router.GET("/:hashval", tinyURLController.Get)
-	router.POST("/", tinyURLController.Post)
+	r1 := router.Group("/url")
+	r1.GET("/", tinyURLController.GetIndexPage)
+	r1.GET("/:hashval", tinyURLController.Get)
+	r1.POST("/", tinyURLController.Post)
+
+	r2 := router.Group("/file")
+	r2.GET("/", uploadFileController.GetIndexPage)
+	r2.POST("/", uploadFileController.Post)
+
 	return router
 }

@@ -57,7 +57,7 @@ func (t *tinyURL) Post(c *gin.Context) (string, error) {
 }
 
 func NewtinyURL(hashval string, r repository.Repository, err error) *tinyURL {
-	newURL := domainName + "/" + hashval
+	newURL := domainName + "/url/" + hashval
 	return &tinyURL{newURL, err, r}
 }
 
