@@ -25,12 +25,13 @@ func (ctrl *fileServiceController) Get(c *gin.Context) {
 }
 
 func (ctrl *fileServiceController) Post(c *gin.Context) {
-	_, err := ctrl.s.Post(c)
+	response, err := ctrl.s.Post(c)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusBadRequest)
-		fmt.Print(c.Writer, "%s", err.Error())
+		fmt.Fprintf(c.Writer, "%s", err.Error())
 		return
 	}
 	c.Writer.WriteHeader(http.StatusCreated)
+	fmt.Fprintf(c.Writer, "%s", response)
 	return
 }

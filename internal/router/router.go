@@ -15,8 +15,8 @@ func SetupRouter(dbConn *gorm.DB) *gin.Engine {
 	URLService := service.NewTinyURLService(
 		service.NewtinyURL("", repo, nil),
 	)
-
 	tinyURLController := controller.NewtinyURLController(URLService)
+
 	uploadFileService := service.NewfileService()
 	uploadFileController := controller.NewfileServiceController(uploadFileService)
 
@@ -26,7 +26,6 @@ func SetupRouter(dbConn *gorm.DB) *gin.Engine {
 	r1.POST("/", tinyURLController.Post)
 
 	r2 := router.Group("/file")
-	r2.GET("/", uploadFileController.GetIndexPage)
 	r2.POST("/", uploadFileController.Post)
 
 	return router

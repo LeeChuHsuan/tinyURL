@@ -17,6 +17,7 @@ type Repository interface {
 
 func init() {
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("..")
 	viper.SetConfigName("../config/dbconfig")
 	viper.SetConfigType("yaml")
 

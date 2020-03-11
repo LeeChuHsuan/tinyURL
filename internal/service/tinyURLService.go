@@ -40,7 +40,7 @@ func (t *tinyURL) Get(c *gin.Context) (string, error) {
 
 func (t *tinyURL) Post(c *gin.Context) (string, error) {
 	url := c.PostForm("url")
-	URLHash := hashURL(url)
+	URLHash := HashURL(url)
 
 	record := repository.NewURLMapping(url, URLHash)
 	err := t.repo.InsertDB(record)
@@ -61,7 +61,7 @@ func NewtinyURL(hashval string, r repository.Repository, err error) *tinyURL {
 	return &tinyURL{newURL, err, r}
 }
 
-func hashURL(url string) string {
+func HashURL(url string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(url))
 	hashvalue := hex.EncodeToString(hasher.Sum(nil))

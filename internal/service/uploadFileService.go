@@ -15,13 +15,13 @@ type fileService struct {
 type file struct{}
 
 const maxFileSize = 1 << 20
-const fileStoreRoot = "../uploadFiles/"
 
 func NewfileService() *fileService {
 	return &fileService{&file{}}
 }
 
 func (f *file) Post(g *gin.Context) (string, error) {
+	var fileStoreRoot = os.Getenv("uploadfileRoot")
 	err := g.Request.ParseMultipartForm(maxFileSize)
 	if err != nil {
 		fmt.Print(err)
@@ -40,6 +40,7 @@ func (f *file) Post(g *gin.Context) (string, error) {
 		return "", err
 	}
 	defer newFile.Close()
+
 	_, err = io.Copy(newFile, uploadFile)
 	if err != nil {
 		fmt.Print(err)

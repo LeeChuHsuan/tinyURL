@@ -36,7 +36,7 @@ func (r *URLMappingRepo) GetByPrimaryKey(key interface{}) (interface{}, error) {
 	}
 
 	var record URLMapping
-	if err := r.dbConn.Where("hashval=?", hashval).First(&record).Error; err != nil {
+	if err := r.dbConn.Where("hashval = ?", hashval).First(&record).Error; err != nil {
 		fmt.Println(err)
 		return "", err
 	}

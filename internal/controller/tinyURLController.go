@@ -25,6 +25,7 @@ func (ctrl *tinyURLController) Get(c *gin.Context) {
 	response, err := ctrl.s.Get(c)
 	if err != nil {
 		http.NotFound(c.Writer, c.Request)
+		return
 	}
 	http.Redirect(c.Writer, c.Request, response, http.StatusFound)
 }

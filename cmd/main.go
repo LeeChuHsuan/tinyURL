@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"tinyURL/internal/repository"
 	"tinyURL/internal/router"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func setup(dbConn *gorm.DB) *gin.Engine {
-
+	os.Setenv("uploadfileRoot", "../uploadFiles/")
 	router := router.SetupRouter(dbConn)
 	return router
 }
